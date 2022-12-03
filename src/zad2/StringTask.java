@@ -1,14 +1,14 @@
 package zad2;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 public class StringTask implements Runnable {
 
     private String text;
-    private String result;
+    private volatile String result;
     private int amount;
-    private TaskState state;
-    private boolean done;
+    private volatile TaskState state;
+    private volatile boolean done;
+
+    private Thread thread;
 
     public StringTask(String text, int amount) {
         this.text = text;
@@ -20,7 +20,7 @@ public class StringTask implements Runnable {
     }
 
     public void start(){
-        Thread thread = new Thread(
+        thread = new Thread(
                 () -> {
                     state = TaskState.RUNNING;
                     StringTask.this.run();
@@ -31,6 +31,7 @@ public class StringTask implements Runnable {
     }
 
     public void abort(){
+        thread.interrupt();
         state = TaskState.ABORTED;
         done = true;
     }
@@ -51,7 +52,7 @@ public class StringTask implements Runnable {
     public void run() {
         result = "";
         for(int i = 0; i < amount; i++){
-            if(state == TaskState.ABORTED){
+            if(Thread.interrupted()){
                 break;
             }
 

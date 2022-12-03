@@ -16,7 +16,7 @@ public class Main {
       Thread thread = new Thread(() -> {
         try {
           Thread.sleep(1000);
-          task.abort();;
+          task.abort();
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
